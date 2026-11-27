@@ -42,9 +42,9 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           path: dist/*.zip
-          name: ${{ env.ghidra_version }}
           if-no-files-found: error
           retention-days: 1
+          archive: false
 
   push_release:
     if: github.event_name == 'push'
@@ -55,7 +55,9 @@ jobs:
         uses: actions/checkout@main
       - name: Download artifacts
         uses: actions/download-artifact@main
+        with:
+          skip-decompress: true
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create 1.0${{ GITHUB.RUN_NUMBER }} artifact/*.zip --target ${{ GITHUB.SHA }} -t 1.0${{ GITHUB.RUN_NUMBER }}
+        run: gh release create 1.0${{ GITHUB.RUN_NUMBER }} ./*.zip --target ${{ GITHUB.SHA }} -t 1.0${{ GITHUB.RUN_NUMBER }}
